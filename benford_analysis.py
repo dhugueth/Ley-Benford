@@ -111,10 +111,10 @@ window.configure(background='#2C2C2C')
 # Etiqueta y campo de entrada para el archivo de Excel
 file_label = tk.Label(window, text="Archivo de Excel:", bg='#2C2C2C' ,fg='#FFFFFF' ,font=('Segoe UI Semibold', 18))
 file_label.pack()
-file_entry = tk.Entry(window, width=50,bg='#1C1C1C')
+file_entry = tk.Entry(window, width=70,bg='#1C1C1C',fg='#FFFFFF')
 file_entry.pack(ipadx=2,ipady=2)
-file_button = tk.Button(window, text="Seleccionar archivo", command=select_file, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 16))
-file_button.pack()
+file_button = tk.Button(window, text="Seleccionar archivo", height=0, command=select_file, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 12))
+file_button.pack(pady=10, ipady=0)
 
 # Define the style for combobox widget
 style= ttk.Style()
@@ -129,7 +129,7 @@ columns_combobox = ttk.Combobox(window, width=48,height=0, values=[], font=('Seg
 columns_combobox.pack(pady=(0,0))
 
 # Botón para aplicar la ley de Benford
-apply_button = tk.Button(window, text="Aplicar ley de Benford", command=apply_benford_law, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 16))
+apply_button = tk.Button(window, text="Aplicar ley de Benford", command=apply_benford_law, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 12))
 apply_button.pack(pady=10)
 
 # Crear un widget de texto para mostrar el resultado
