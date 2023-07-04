@@ -12,8 +12,11 @@ from benfordslaw import benfordslaw
 import string
 import getpass
 import os
+import csv
+import re
 # Estadisticas
 from statistics import multimode
+
 
 
 # Función para manejar el evento de clic en el botón "Seleccionar archivo"
@@ -29,6 +32,7 @@ def select_file():
         columns_combobox['values'] = column_names 
 
 # -------------------------------------------------------------------------------------------------------------------------- 
+
 
 # Función para calcular la distribución de Benford para una columna
 def calculate_benford_distribution(data_column):
@@ -51,8 +55,55 @@ def calculate_benford_distribution(data_column):
 
     # Generar grafica
     fig , _ =bl.plot(title=out, barcolor=[0.4, 0.1, 0.5], fontsize=16, barwidth=0.6)
+
     # Guardar la figura en un archivo
     fig.savefig(path)
+
+
+# -------------------------------------------------------------------------------------------------------------------------- 
+
+
+# Función para exportar datos a un archivo CSV
+def export_data():
+    global columns
+
+    # Obtener el usuario del equipo
+    username = getpass.getuser()
+    titulo = columns
+    titulo_limpio = titulo.translate(str.maketrans('', '', string.punctuation))
+    # Ruta de acceso donde se guardará el archivo CSV
+    file_path = f"/Users/{username}/Desktop/Resultados Ley Benford/datos_{titulo_limpio}.csv"
+
+    # Capturar el contenido del widget Text
+    text_content = result_text.get("1.0", tk.END)
+
+    # Separar el contenido por líneas
+    lines = text_content.split("\n")
+
+    # Eliminar líneas en blanco
+    lines = [line.strip() for line in lines if line.strip()]
+
+    # Crear una lista para almacenar las filas de datos
+    data_rows = []
+
+    # Procesar cada línea para obtener los valores de las columnas
+    for line in lines:
+        # Eliminar las tabulaciones adicionales y dejar solo una tabulación
+        line = re.sub(r'\t+', '\t', line)
+
+        # Separar la línea en columnas
+        columns = line.split("\t")
+
+        # Agregar la fila de datos a la lista
+        data_rows.append(columns)
+
+    # Escribir el contenido en el archivo CSV
+    with open(file_path, "w", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerows(data_rows)
+
+    # Mostrar un mensaje de éxito
+    result_text.insert(tk.END, "\n¡Datos exportados exitosamente a un archivo CSV!")
 
 
 # -------------------------------------------------------------------------------------------------------------------------- 
@@ -65,7 +116,6 @@ def apply_benford_law():
 
     file_path = file_entry.get()
     columns=columns_combobox.get()
-    print(columns)
 
     # Cargar el archivo Excel
     try:
@@ -83,25 +133,30 @@ def apply_benford_law():
 
     # Mostrar información sobre valores no numéricos o en blanco
     result_text.insert(tk.END, f"Columna: {columns}\n\n")
-    result_text.insert(tk.END, "Información sobre valores no numéricos o en blanco:\n")
-    result_text.insert(tk.END, f"Total de filas: {data_frame.shape[0]}\n")
-    result_text.insert(tk.END, f"Filas con valores no numéricos o en blanco: {invalid_rows.sum()}\n\n")
+    result_text.insert(tk.END, "NORMALIZACION DE DATOS\n\n")
+    result_text.insert(tk.END, f"   Total de filas iniciales\t\t\t{data_frame.shape[0]}\n")
+    result_text.insert(tk.END, f"   Numero de filas invalidas\t\t\t{invalid_rows.sum()}\n\n")
 
-    data_column = filtered_data_frame[columns]
+    data_column = filtered_data_frame[columns]  
 
     # Mostrar información de resumen estadistico
-    result_text.insert(tk.END, "Resumen estadístico:\n\n")
-    result_text.insert(tk.END, f"Cantidad de datos: {round(data_column.shape[0],3)}\n")
-    result_text.insert(tk.END, f"Máximo : {round(data_column.max(),3)}\n") 
-    result_text.insert(tk.END, f"Mínimo : {round(data_column.min(),3)}\n") 
-    result_text.insert(tk.END, f"Media : {round(data_column.mean(),3)}\n")
-    result_text.insert(tk.END, f"Desviación estándar : {round(data_column.std(),3)}\n") 
-    result_text.insert(tk.END, f"Moda : {multimode(data_column)}\n\n") 
+    result_text.insert(tk.END, "RESUMEN ESTADISTICO\n\n")
+    result_text.insert(tk.END, f"   Cantidad de datos\t\t\t{round(data_column.shape[0],3)}\n")
+    result_text.insert(tk.END, f"   Maximo\t\t\t{round(data_column.max(),3)}\n")
+    result_text.insert(tk.END, f"   Minimo\t\t\t{round(data_column.min(),3)}\n") 
+    result_text.insert(tk.END, f"   Media\t\t\t{round(data_column.mean(),3)}\n")
+    result_text.insert(tk.END, f"   Desviacion estandar\t\t\t{round(data_column.std(),3)}\n") 
+    result_text.insert(tk.END, f"   Moda\t\t\t{multimode(data_column)}\n")
+
+    # Crear el botón de exportar
+    export_button = tk.Button(window, text="Exportar datos", command=export_data, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 12))
+    export_button.pack()
 
     calculate_benford_distribution(data_column)
 
 
 # --------------------------------------------------------------------------------------------------------------------------                
+
 
 # Crear la ventana de la interfaz gráfica
 window = tk.Tk()
@@ -135,6 +190,7 @@ apply_button.pack(pady=10)
 # Crear un widget de texto para mostrar el resultado
 result_text = tk.Text(window, height=20, width=60, bg='#1C1C1C', fg='#FFFFFF' ,font=('Segoe UI Semibold', 14))
 result_text.pack()
+
 
 # Iniciar la interfaz gráfica
 window.mainloop()
