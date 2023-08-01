@@ -258,8 +258,8 @@ def mostrar_informacion_2():
     apply_button.pack(pady=10)
 
     # Crear un widget de texto para mostrar el resultado
-    result_text = tk.Text(window, height=20, width=60, bg='#1C1C1C', fg='#FFFFFF' ,font=('Segoe UI Semibold', 18))
-    result_text.pack()
+    result_text = tk.Text(window, height=10, width=60, bg='#1C1C1C', fg='#FFFFFF' ,font=('Segoe UI Semibold', 18))
+    result_text.pack(pady=10)
 
 # Botón para mostrar información 1
 boton_info_1 = tk.Button(window, text="Continuar", command=mostrar_informacion_2)
