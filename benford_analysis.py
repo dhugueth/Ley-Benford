@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import filedialog 
 from tkinter import *
 from tkinter import ttk
+from tkinter import font
 # Archivos, calculos y otros
 import pandas as pd
 from benfordslaw import benfordslaw
@@ -16,11 +17,14 @@ import csv
 import re
 # Estadisticas
 from statistics import multimode
+from PIL import Image, ImageTk  # Importamos PIL
 
 
 
 # Función para manejar el evento de clic en el botón "Seleccionar archivo"
 def select_file():
+    global result_text, file_entry ,columns_combobox
+
     file_path = filedialog.askopenfilename(filetypes=[("Excel Files", "*.xlsx")])
     file_entry.delete(0, tk.END)
     file_entry.insert(0, file_path) 
@@ -36,6 +40,8 @@ def select_file():
 
 # Función para calcular la distribución de Benford para una columna
 def calculate_benford_distribution(data_column):
+
+    global result_text, file_entry ,columns_combobox
     
     # Obtener el usuario del equipo
     username = getpass.getuser()
@@ -65,7 +71,7 @@ def calculate_benford_distribution(data_column):
 
 # Función para exportar datos a un archivo CSV
 def export_data():
-    global columns
+    global columns ,result_text, file_entry ,columns_combobox
 
     # Obtener el usuario del equipo
     username = getpass.getuser()
@@ -107,12 +113,28 @@ def export_data():
 
 
 # -------------------------------------------------------------------------------------------------------------------------- 
+contador = 0
+export_button = None
 
 
 # Función para manejar el evento de clic en el botón "Aplicar ley de Benford"
 def apply_benford_law():
+    clear_result_text()
+    calculate_benford_data()
 
-    global columns, data_frame
+
+# Función para limpiar el contenido del cuadro result_text
+def clear_result_text():
+    result_text.delete("1.0", tk.END)
+
+
+# Función para calcular y mostrar los resultados en el cuadro result_text
+def calculate_benford_data():
+
+    global columns, data_frame, file_entry ,columns_combobox,contador, export_button,contador
+
+    if contador > 0 :
+        export_button.pack_forget()
 
     file_path = file_entry.get()
     columns=columns_combobox.get()
@@ -124,7 +146,6 @@ def apply_benford_law():
         result_text.delete("1.0", tk.END)
         result_text.insert(tk.END, f"Error al cargar el archivo Excel: {str(e)}")
         return
-    
 
     # Filtrar valores no numéricos o en blanco
     invalid_rows = data_frame[columns].apply(lambda x: not isinstance(x, (float, int)))
@@ -152,7 +173,9 @@ def apply_benford_law():
     export_button = tk.Button(window, text="Exportar datos", command=export_data, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 12))
     export_button.pack()
 
-    calculate_benford_distribution(data_column)
+    contador += 1
+
+    calculate_benford_distribution(data_column)   
 
 
 # --------------------------------------------------------------------------------------------------------------------------                
@@ -163,34 +186,80 @@ window = tk.Tk()
 window.title("Análisis de Benford")
 window.configure(background='#2C2C2C')
 
-# Etiqueta y campo de entrada para el archivo de Excel
-file_label = tk.Label(window, text="Archivo de Excel:", bg='#2C2C2C' ,fg='#FFFFFF' ,font=('Segoe UI Semibold', 18))
-file_label.pack()
-file_entry = tk.Entry(window, width=70,bg='#1C1C1C',fg='#FFFFFF')
-file_entry.pack(ipadx=2,ipady=2)
-file_button = tk.Button(window, text="Seleccionar archivo", height=0, command=select_file, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 12))
-file_button.pack(pady=10, ipady=0)
+negrita_font_1= font.Font(family='Segoe UI Semibold', size=28, weight='bold')
+negrita_font_2= font.Font(family='Segoe UI Semibold', size=20, weight='bold')
 
-# Define the style for combobox widget
-style= ttk.Style()
-style.theme_use('clam')
-style.configure("TCombobox", fieldbackground= "#504C54", background= "#504C54", fg='#FFFFFF' )
+# Obtener el usuario del equipo
+username = getpass.getuser()
 
-# Etiqueta y campo de entrada para las columnas
-columns_label = tk.Label(window, text="Nombre de la Columna a analizar:\n", height=2,bg='#2C2C2C'  , fg='#FFFFFF'  ,font=('Segoe UI Semibold', 18))
-columns_label.pack(pady=(15,0))
+# Cargar la imagen y mostrarla en la ventana introductoria
+image_path = f"/Users/{username}/Downloads/transelca_logo.png"  # Cambia esto a la ruta de tu imagen
 
-columns_combobox = ttk.Combobox(window, width=48,height=0, values=[], font=('Segoe UI Semibold', 12))
-columns_combobox.pack(pady=(0,0))
+img = Image.open(image_path)
+img = img.resize((232, 107))
 
-# Botón para aplicar la ley de Benford
-apply_button = tk.Button(window, text="Aplicar ley de Benford", command=apply_benford_law, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 12))
-apply_button.pack(pady=10)
+# Crear una imagen con el fondo del color deseado
+width, height = img.size
+background_color = (44, 44, 44)  # Cambia el color a tu preferencia (R, G, B)
+background_img = Image.new("RGB", (width, height), background_color)
 
-# Crear un widget de texto para mostrar el resultado
-result_text = tk.Text(window, height=20, width=60, bg='#1C1C1C', fg='#FFFFFF' ,font=('Segoe UI Semibold', 14))
-result_text.pack()
+# Superponer la imagen original sobre el fondo
+background_img.paste(img, (0, 0), img)
 
+# Mostrar la imagen en la ventana introductoria
+img = ImageTk.PhotoImage(background_img)
+intro_label = tk.Label(window, image=img)
+intro_label.image = img  # Mantén una referencia a la imagen para evitar que sea eliminada por el recolector de basura
+intro_label.pack(pady=20)
+
+
+# Crea y muestra el nuevo contenido
+contenido_intro_1 = intro_label= tk.Label(window,bg='#2C2C2C',fg='#FFFFFF' ,text="¡Bienvenidos!", font=negrita_font_1)
+intro_label.pack(padx=10)
+contenido_intro_2 = intro_label = tk.Label(window,bg='#2C2C2C',fg='#FFFFFF' ,text="\nEsta es una herramienta creada para aplicar a grandes\nvolúmenes de datos la ley matemática de Benford.\n\nUsted podrá cargar archivos Excel y seleccionar la columna deseada\n", font=negrita_font_2)
+intro_label.pack(padx=10)
+
+
+def mostrar_informacion_2():
+    global result_text, file_entry ,columns_combobox
+
+    # Borra el contenido actual
+    contenido_intro_1.pack_forget()
+    contenido_intro_2.pack_forget()
+    boton_info_1.pack_forget()
+
+    # Crea y muestra el nuevo contenido
+    # Etiqueta y campo de entrada para el archivo de Excel
+    file_label = tk.Label(window, text="Archivo de Excel:", bg='#2C2C2C' ,fg='#FFFFFF' ,font=('Segoe UI Semibold', 18))
+    file_label.pack()
+    file_entry = tk.Entry(window, width=70,bg='#1C1C1C',fg='#FFFFFF')
+    file_entry.pack(ipadx=2,ipady=2)
+    file_button = tk.Button(window, text="Seleccionar archivo", height=0, command=select_file, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 18))
+    file_button.pack(pady=10, ipady=0)
+
+    # Define the style for combobox widget
+    style= ttk.Style()
+    style.theme_use('clam')
+    style.configure("TCombobox", fieldbackground= "#504C54", background= "#504C54", fg='#FFFFFF' )
+
+    # Etiqueta y campo de entrada para las columnas
+    columns_label = tk.Label(window, text="Nombre de la Columna a analizar:\n", height=2,bg='#2C2C2C'  , fg='#FFFFFF'  ,font=('Segoe UI Semibold', 18))
+    columns_label.pack(pady=(15,0))
+
+    columns_combobox = ttk.Combobox(window, width=48,height=0, values=[], font=('Segoe UI Semibold', 12))
+    columns_combobox.pack(pady=(0,0))
+
+    # Botón para aplicar la ley de Benford
+    apply_button = tk.Button(window, text="Aplicar ley de Benford", command=apply_benford_law, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 18))
+    apply_button.pack(pady=10)
+
+    # Crear un widget de texto para mostrar el resultado
+    result_text = tk.Text(window, height=20, width=60, bg='#1C1C1C', fg='#FFFFFF' ,font=('Segoe UI Semibold', 18))
+    result_text.pack()
+
+# Botón para mostrar información 1
+boton_info_1 = tk.Button(window, text="Continuar", command=mostrar_informacion_2)
+boton_info_1.pack(pady=10)
 
 # Iniciar la interfaz gráfica
 window.mainloop()
