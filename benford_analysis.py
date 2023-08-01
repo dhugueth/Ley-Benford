@@ -238,7 +238,7 @@ def mostrar_informacion_2():
     file_label.pack()
     file_entry = tk.Entry(window, width=70,bg='#1C1C1C',fg='#FFFFFF')
     file_entry.pack(ipadx=2,ipady=2)
-    file_button = tk.Button(window, text="Seleccionar archivo", height=0, command=select_file, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 18))
+    file_button = tk.Button(window, text="Seleccionar archivo", height=0, command=select_file, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 14))
     file_button.pack(pady=10, ipady=0)
 
     # Define the style for combobox widget
@@ -247,18 +247,18 @@ def mostrar_informacion_2():
     style.configure("TCombobox", fieldbackground= "#504C54", background= "#504C54", fg='#FFFFFF' )
 
     # Etiqueta y campo de entrada para las columnas
-    columns_label = tk.Label(window, text="Nombre de la Columna a analizar:\n", height=2,bg='#2C2C2C'  , fg='#FFFFFF'  ,font=('Segoe UI Semibold', 18))
+    columns_label = tk.Label(window, text="Nombre de la Columna a analizar:\n", height=2,bg='#2C2C2C'  , fg='#FFFFFF'  ,font=('Segoe UI Semibold', 14))
     columns_label.pack(pady=(15,0))
 
     columns_combobox = ttk.Combobox(window, width=48,height=0, values=[], font=('Segoe UI Semibold', 12))
     columns_combobox.pack(pady=(0,0))
 
     # Botón para aplicar la ley de Benford
-    apply_button = tk.Button(window, text="Aplicar ley de Benford", command=apply_benford_law, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 18))
+    apply_button = tk.Button(window, text="Aplicar ley de Benford", command=apply_benford_law, bg='#EEEEEE', fg='#000000' ,font=('Segoe UI Semibold', 14))
     apply_button.pack(pady=10)
 
     # Crear un widget de texto para mostrar el resultado
-    result_text = tk.Text(window, height=10, width=60, bg='#1C1C1C', fg='#FFFFFF' ,font=('Segoe UI Semibold', 18))
+    result_text = tk.Text(window, height=10, width=50, bg='#1C1C1C', fg='#FFFFFF' ,font=('Segoe UI Semibold', 14))
     result_text.pack(pady=10)
 
 # Botón para mostrar información 1
