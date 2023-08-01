@@ -13,6 +13,7 @@ from benfordslaw import benfordslaw
 import string
 import getpass
 import os
+import sys
 import csv
 import re
 # Estadisticas
