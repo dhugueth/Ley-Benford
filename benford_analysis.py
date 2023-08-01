@@ -19,7 +19,10 @@ import re
 from statistics import multimode
 from PIL import Image, ImageTk  # Importamos PIL
 
-
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 # Función para manejar el evento de clic en el botón "Seleccionar archivo"
 def select_file():
@@ -193,9 +196,9 @@ negrita_font_2= font.Font(family='Segoe UI Semibold', size=20, weight='bold')
 username = getpass.getuser()
 
 # Cargar la imagen y mostrarla en la ventana introductoria
-image_path = f"./asset/transelca_logo.png"
+# image_path = f"./asset/transelca_logo.png"
 
-img = Image.open(image_path)
+img = Image.open(resource_path("transelca_logo.png"))
 img = img.resize((232, 107))
 
 # Crear una imagen con el fondo del color deseado
