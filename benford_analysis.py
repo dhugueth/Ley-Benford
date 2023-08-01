@@ -193,7 +193,7 @@ negrita_font_2= font.Font(family='Segoe UI Semibold', size=20, weight='bold')
 username = getpass.getuser()
 
 # Cargar la imagen y mostrarla en la ventana introductoria
-image_path = f"/Users/{username}/Downloads/transelca_logo.png"  # Cambia esto a la ruta de tu imagen
+image_path = f"./asset/transelca_logo.png"
 
 img = Image.open(image_path)
 img = img.resize((232, 107))
